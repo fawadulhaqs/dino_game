@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "784577929148",
+    "project_id": "dino-run-c3a3b",
+    "storage_bucket": "dino-run-c3a3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784577929148:android:18671bb3642c4bec1955b9",
+        "android_client_info": {
+          "package_name": "com.example.my_first_game"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784577929148-sc90nnbm1omnl9s011v7h07skptklamp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfxuyMoz5uYLHwY7yEenRjtjO8YPgstVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784577929148-sc90nnbm1omnl9s011v7h07skptklamp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
