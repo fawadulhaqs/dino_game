@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Helper {
@@ -15,6 +16,6 @@ class Helper {
     SharedPreferences sp = await SharedPreferences.getInstance();
     int addedCoins = coins + (sp.getInt('totalCoins') ?? 0);
     sp.setInt('totalCoins', addedCoins);
-    print('Total Coins Collected ${sp.get('totalCoins')}');
+    debugPrint('Total Coins Collected ${sp.get('totalCoins')}');
   }
 }

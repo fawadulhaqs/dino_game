@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 import 'game_view.dart';
 
+// ignore: must_be_immutable
 class MainMenu extends StatelessWidget {
   MainMenu({
     Key? key,
@@ -125,38 +126,50 @@ class MainMenu extends StatelessWidget {
                                                 0.05,
                                             color: Colors.white),
                                       ),
-                                      Stack(
-                                        alignment: Alignment.centerLeft,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 8.0),
-                                            child: Container(
-                                              width: 95,
-                                              height: 30,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Image.asset(
-                                                'assets/images/coin2.png',
-                                                width: 45,
-                                                height: 45,
-                                              ),
-                                              Text(
-                                                ' ${element.totalCoins}',
-                                                style: const TextStyle(
-                                                    fontSize: 15,
-                                                    color: Colors.black),
-                                              )
-                                            ],
-                                          ),
-                                        ],
+                                      OrientationBuilder(
+                                        builder: (BuildContext context,
+                                            Orientation orientation) {
+                                          if (orientation ==
+                                              Orientation.landscape) {
+                                            return Stack(
+                                              alignment: Alignment.centerLeft,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Container(
+                                                    width: 95,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20)),
+                                                  ),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Image.asset(
+                                                      'assets/images/coin2.png',
+                                                      width: 45,
+                                                      height: 45,
+                                                    ),
+                                                    Text(
+                                                      ' ${element.totalCoins}',
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          color: Colors.black),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          } else if(orientation == Orientation.portrait) {
+                                            return const SizedBox();
+                                          }
+                                          return const SizedBox();
+                                        },
                                       )
                                     ],
                                   ),

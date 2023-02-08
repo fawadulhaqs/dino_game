@@ -188,16 +188,10 @@ class Backgrounds extends StatelessWidget {
                                               price[index]) {
                                             showBuyPopUp(
                                                 value, mapName, price[index]);
-                                            // value.setInventory(mapName);
-                                            // print('added');
-                                            // print(inventory);
                                           } else {
                                             showPricePopUp();
                                           }
                                         }
-                                      },
-                                      onLongPress: () {
-                                        value.clearInventory();
                                       },
                                       child: Container(
                                         height: 165,

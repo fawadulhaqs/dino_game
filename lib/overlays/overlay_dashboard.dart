@@ -35,7 +35,6 @@ class _OverlayDashboardState extends State<OverlayDashboard> {
         adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
           ad.fullScreenContentCallback =
               FullScreenContentCallback(onAdDismissedFullScreenContent: (ad) {
-            print('ad completed');
             setState(() {
               ad.dispose();
               _interstitialAd = null;
@@ -55,7 +54,7 @@ class _OverlayDashboardState extends State<OverlayDashboard> {
             _interstitialAd = ad;
           });
         }, onAdFailedToLoad: (err) {
-          print('InterstitialAd Failed to load : ${err.message}');
+          debugPrint('InterstitialAd Failed to load : ${err.message}');
         }));
   }
 
@@ -82,7 +81,7 @@ class _OverlayDashboardState extends State<OverlayDashboard> {
             _rewardedAd = ad;
           });
         }, onAdFailedToLoad: (err) {
-          print('Error showing rewarded ad : ${err.message}');
+          debugPrint('Error showing rewarded ad : ${err.message}');
         }));
   }
 
@@ -293,7 +292,7 @@ class _OverlayDashboardState extends State<OverlayDashboard> {
                                       isloading.value = true;
                                       _interstitialAd!.show();
                                     } else {
-                                      print('InterstitialAd Not Loaded');
+                                      debugPrint('InterstitialAd Not Loaded');
                                       widget.gameRef.detach;
                                       Navigator.of(context).pushReplacement(
                                           MaterialPageRoute(
@@ -454,10 +453,9 @@ class _OverlayDashboardState extends State<OverlayDashboard> {
                                   if (_interstitialAd != null) {
                                     isloading.value = true;
                                     _interstitialAd!.show();
-                                    print('hello');
                                   } else {
                                     widget.gameRef.detach;
-                                    print('InterstitialAd Not Loaded');
+                                    debugPrint('InterstitialAd Not Loaded');
                                     widget.gameRef.detach;
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(

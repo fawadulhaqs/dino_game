@@ -123,7 +123,7 @@ class Enemies extends SpriteAnimationComponent
               size.y - topBottomSpacing + baseHeight / 1.2)));
     }
     animation = _enemyAnimation;
-    debugMode = true;
+    // debugMode = true;
     anchor = Anchor.center;
     return super.onLoad();
   }

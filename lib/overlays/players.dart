@@ -153,7 +153,6 @@ class Players extends StatelessWidget {
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (BuildContext context, int index) {
                               final inventory = value.inventory;
-                              // String inventoryName = name[index];
                               final mapName = name[index];
                               return Padding(
                                 padding:
@@ -166,22 +165,15 @@ class Players extends StatelessWidget {
                                           sp?.setInt('player', index);
                                           value.clearMap();
                                           value.setPlayer(name[index]);
-                                          print(sp?.getInt('player'));
                                         } else {
                                           if ((sp?.getInt('totalCoins') ?? 0) >=
                                               price[index]) {
                                             showBuyPopUp(
                                                 value, mapName, price[index]);
-                                            // value.setInventory(mapName);
-                                            // print('added');
-                                            print(inventory);
                                           } else {
                                             showPricePopUp();
                                           }
                                         }
-                                      },
-                                      onLongPress: () {
-                                        value.clearInventory();
                                       },
                                       child: Container(
                                         height: 160,

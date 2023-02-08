@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:my_first_game/Game/gems.dart';
 import 'package:my_first_game/Game/start_game.dart';
@@ -5,12 +6,12 @@ import 'package:my_first_game/Game/start_game.dart';
 class GemManager extends Component with HasGameRef<StartGame>{
 
 
-  late Timer _timer;
+  late Timer _timer1;
+
 
   @override
   Future<void> onLoad()async{
-
-    _timer = Timer(1,repeat: true ,onTick: (){
+    _timer1 = Timer(0.7,repeat: true ,onTick: (){
       spawnGem();
     });
 
@@ -25,13 +26,12 @@ class GemManager extends Component with HasGameRef<StartGame>{
   @override
   void onMount() {
     super.onMount();
-    _timer.start();
-
+    _timer1.start();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    _timer.update(dt);
+    _timer1.update(dt);
   }
 }

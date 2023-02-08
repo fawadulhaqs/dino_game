@@ -74,7 +74,7 @@ class MapProviders extends ChangeNotifier {
 
   List<String> get inventory => _inventory;
 
-  final List? _selectedMap = [name[sp?.getInt('bg') ?? 0]];
+  final List _selectedMap = [name[sp?.getInt('bg') ?? 0]];
 
   int? _mapIndex = sp?.getInt('bg') ?? 0;
 
@@ -83,7 +83,7 @@ class MapProviders extends ChangeNotifier {
   List? get selectedMap => _selectedMap;
 
   void setMap(String? newName) {
-    _selectedMap?.add(newName);
+    _selectedMap.add(newName);
     _mapIndex = name.indexOf(newName!);
     notifyListeners();
   }
@@ -101,7 +101,7 @@ class MapProviders extends ChangeNotifier {
   }
 
   void clearMap() {
-    _selectedMap?.clear();
+    _selectedMap.clear();
   }
 }
 
@@ -113,12 +113,12 @@ class PlayerProviders extends ChangeNotifier {
 
   List<String> get inventory => _inventory;
 
-  final List? _selectedPlayer = [playerName[sp?.getInt('player') ?? 0]];
+  final List _selectedPlayer = [playerName[sp?.getInt('player') ?? 0]];
 
   List? get selectedPlayer => _selectedPlayer;
 
   void setPlayer(String? newName) {
-    _selectedPlayer?.add(newName);
+    _selectedPlayer.add(newName);
     notifyListeners();
   }
 
@@ -135,6 +135,6 @@ class PlayerProviders extends ChangeNotifier {
   }
 
   void clearMap() {
-    _selectedPlayer?.clear();
+    _selectedPlayer.clear();
   }
 }

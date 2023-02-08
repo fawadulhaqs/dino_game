@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_first_game/SharedPref/shared_pref.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../main.dart';
-import '../prividers/audio_providers.dart';
 
 class Setting extends StatelessWidget {
   const Setting({Key? key}) : super(key: key);
@@ -13,7 +9,6 @@ class Setting extends StatelessWidget {
   Widget build(BuildContext context) {
     ValueNotifier<bool> sfx = ValueNotifier(sp?.getBool('SFX') ?? true);
     ValueNotifier<bool> bgm = ValueNotifier(sp?.getBool('BGM') ?? true);
-    MapProviders element = Provider.of<MapProviders>(context, listen: false);
     return Center(
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -29,7 +24,9 @@ class Setting extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Text(
                   'SETTINGS',
-                  style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width * 0.04,
+                      color: Colors.white),
                 ),
               ),
               const Divider(
@@ -61,7 +58,6 @@ class Setting extends StatelessWidget {
                 valueListenable: bgm,
                 builder: (BuildContext context, value, Widget? child) {
                   return SizedBox(
-                    // width: 400,
                     child: SwitchListTile(
                         subtitle: const Text(
                           'Background Music',
@@ -81,14 +77,6 @@ class Setting extends StatelessWidget {
                   );
                 },
               ),
-              TextButton(
-                  onPressed: () {
-                    int coins = sp?.getInt('totalCoins') ?? 0;
-
-                    Helper().addCoins(100);
-                    element.setCoins(coins + 100);
-                  },
-                  child: const Text('Add 100 coins'))
             ],
           ),
         ),

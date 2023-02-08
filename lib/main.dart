@@ -22,7 +22,6 @@ Future<void> main() async {
     "7148C7CB2EC5E96C0973AE375DC94616",
     "22B837E0B745791D726A18CFA820459E"
   ];
-  // await MobileAds.instance.initialize();
   await MobileAds.instance.updateRequestConfiguration(
       RequestConfiguration(testDeviceIds: testDeviceIds));
   Flame.device.fullScreen();

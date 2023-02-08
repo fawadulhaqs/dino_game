@@ -51,30 +51,6 @@ class Menu extends StatelessWidget {
                   ],
                 ),
               ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const MyGame()));
-                  },
-                  child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.black,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.white,
-                              spreadRadius: 3,
-                              blurRadius: 7,
-                              offset: Offset(0, 0),
-                            )
-                          ],
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text(
-                          "Let's Play",
-                          style: TextStyle(fontSize: 30, color: Colors.white),
-                        ),
-                      ))),
             ],
           ),
         ),

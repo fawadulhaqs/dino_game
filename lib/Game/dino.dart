@@ -52,7 +52,7 @@ class Dino extends SpriteAnimationComponent
         jumpFrom: 0,
         jumpTo: 3,
         hitFrom: 14,
-        hitTo: 16,
+        hitTo: 17,
         runFrom: 4,
         runTo: 10,
         jumpStepTime: 0.2,
