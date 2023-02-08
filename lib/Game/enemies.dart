@@ -109,13 +109,21 @@ class Enemies extends SpriteAnimationComponent
       potSpawn = true;
     }
     speed = enemy.speed;
-    add(CircleHitbox(
-        radius: height / 2,
-        anchor: Anchor.center,
-        position: Vector2(
-            width - width / 2, size.y - topBottomSpacing + baseHeight / 1.2)));
+    if (enemyType == EnemyType.pot) {
+      add(RectangleHitbox(
+          size: Vector2(50, 65),
+          anchor: Anchor.center,
+          position: Vector2(width - width / 2.5,
+              size.y - topBottomSpacing + baseHeight / 1.2)));
+    } else {
+      add(CircleHitbox(
+          radius: height / 2,
+          anchor: Anchor.center,
+          position: Vector2(width - width / 2,
+              size.y - topBottomSpacing + baseHeight / 1.2)));
+    }
     animation = _enemyAnimation;
-    // debugMode = true;
+    debugMode = true;
     anchor = Anchor.center;
     return super.onLoad();
   }
@@ -146,20 +154,9 @@ class Enemies extends SpriteAnimationComponent
   @override
   void update(double dt) {
     super.update(dt);
-    // double i = ;
     x -= speed * dt;
-    // gameRef.fireBall.x -= fireSpeed * dt;
     if (x < (-width)) {
       removeFromParent();
     }
-    // if (potSpawn) {
-    //   if (gameRef.fireBall.distance(gameRef.dino) < 30) {
-    //     print('FireBall Hit');
-    //     potSpawn = false;
-    //   }
-    //   // print('fireball Xaxis ${gameRef.fireBall.position}');
-    //   // print('dino Xaxis ${gameRef.dino.position}');
-    //   // print(gameRef.fireBall.distance(gameRef.dino));
-    // }
   }
 }

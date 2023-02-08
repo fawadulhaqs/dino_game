@@ -10,4 +10,11 @@ class Helper {
       sp.setInt('coins', coins);
     }
   }
+
+  addCoins(int coins) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    int addedCoins = coins + (sp.getInt('totalCoins') ?? 0);
+    sp.setInt('totalCoins', addedCoins);
+    print('Total Coins Collected ${sp.get('totalCoins')}');
+  }
 }

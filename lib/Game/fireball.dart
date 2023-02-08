@@ -15,8 +15,8 @@ class FireBall extends SpriteAnimationComponent
     final fireSheet = SpriteSheet(image: fireSprite, srcSize: Vector2(64, 32));
 
     _fireAnimation =
-        fireSheet.createAnimation(row: 0, stepTime: 0.1, to: 3, from: 0);
-    add(RectangleHitbox());
+        fireSheet.createAnimation(row: 0, stepTime: 0.04, to: 3, from: 0);
+    add(CircleHitbox());
     animation = _fireAnimation;
     // debugMode = true;
     anchor = Anchor.center;

@@ -1,62 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_game/main.dart';
-import 'package:my_first_game/prividers/audio_providers.dart';
-import 'package:provider/provider.dart';
 
 class Menu extends StatelessWidget {
   const Menu({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        color: Colors.black.withOpacity(0.4),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 100.0, vertical: 50),
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: Colors.black.withOpacity(0.4),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              const Text(
-                'DINO RUN',
-                style: TextStyle(fontSize: 60, color: Colors.white),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  'HOME',
+                  style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width * 0.04,
+                      color: Colors.white),
+                ),
+              ),
+              const Divider(
+                endIndent: 200,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    ListTile(
+                      title: const Text('Highest Coins',
+                          style: TextStyle(fontSize: 17, color: Colors.white)),
+                      trailing: Text('${sp?.getInt('coins') ?? 0}',
+                          style: const TextStyle(
+                              fontSize: 17, color: Colors.white)),
+                    ),
+                    ListTile(
+                      title: const Text('Highest Score',
+                          style: TextStyle(fontSize: 17, color: Colors.white)),
+                      trailing: Text('${sp?.getInt('score') ?? 0}',
+                          style: const TextStyle(
+                              fontSize: 17, color: Colors.white)),
+                    ),
+                  ],
+                ),
               ),
               TextButton(
                   onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => const MyGame()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const MyGame()));
                   },
-                  child: Card(
-                      shape: RoundedRectangleBorder(
+                  child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.white,
+                              spreadRadius: 3,
+                              blurRadius: 7,
+                              offset: Offset(0, 0),
+                            )
+                          ],
                           borderRadius: BorderRadius.circular(10)),
-                      color: Colors.white70,
                       child: const Padding(
                         padding: EdgeInsets.all(10.0),
                         child: Text(
                           "Let's Play",
-                          style: TextStyle(fontSize: 50, color: Colors.black),
+                          style: TextStyle(fontSize: 30, color: Colors.white),
                         ),
                       ))),
-              Consumer<MyAnimatedContainers>(
-                builder: (BuildContext context, value, Widget? child) {
-                  return TextButton(
-                      onPressed: () {
-                        value.setPage(false);
-                      },
-                      child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          color: Colors.white70,
-                          child: const Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: Text(
-                              "Settings",
-                              style: TextStyle(fontSize: 20, color: Colors.black),
-                            ),
-                          )));
-                },
-              ),
             ],
           ),
         ),

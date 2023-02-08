@@ -1,28 +1,124 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:my_first_game/Admob/ad_helper.dart';
 import 'package:my_first_game/overlays/main_menu.dart';
 import 'package:my_first_game/Game/start_game.dart';
 import 'package:my_first_game/SharedPref/shared_pref.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
+import '../prividers/audio_providers.dart';
 import '../prividers/hight_score.dart';
 
-class OverlayDashboard extends StatelessWidget {
+class OverlayDashboard extends StatefulWidget {
   final StartGame gameRef;
-  OverlayDashboard({Key? key, required this.gameRef}) : super(key: key);
+  const OverlayDashboard({Key? key, required this.gameRef}) : super(key: key);
+
+  @override
+  State<OverlayDashboard> createState() => _OverlayDashboardState();
+}
+
+class _OverlayDashboardState extends State<OverlayDashboard> {
+  RewardedAd? _rewardedAd;
+  InterstitialAd? _interstitialAd;
+  bool? isMenu;
+  bool isOne = false;
+  ValueNotifier<bool> isloading = ValueNotifier(false);
+
+  int? collectedCoins;
 
   final Helper helper = Helper();
+
+  Future<void> _loadInterstitialAd() async {
+    return InterstitialAd.load(
+        adUnitId: AdHelper.interstitialAdUnitId!,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
+          ad.fullScreenContentCallback =
+              FullScreenContentCallback(onAdDismissedFullScreenContent: (ad) {
+            print('ad completed');
+            setState(() {
+              ad.dispose();
+              _interstitialAd = null;
+            });
+            if (!isMenu!) {
+              widget.gameRef.detach;
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const MyGame()));
+            } else {
+              widget.gameRef.detach;
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => MainMenu()),
+                  (Route<dynamic> route) => false);
+            }
+          });
+          setState(() {
+            _interstitialAd = ad;
+          });
+        }, onAdFailedToLoad: (err) {
+          print('InterstitialAd Failed to load : ${err.message}');
+        }));
+  }
+
+  void _loadRewardedAd() {
+    RewardedAd.load(
+        adUnitId: AdHelper.rewardedAdUnitId!,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
+          ad.fullScreenContentCallback =
+              FullScreenContentCallback(onAdDismissedFullScreenContent: (ad) {
+            setState(() {
+              ad.dispose();
+              _rewardedAd = null;
+            });
+            if (widget.gameRef.adCounter > 2) {
+              widget.gameRef.detach;
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => MainMenu()),
+                  (Route<dynamic> route) => false);
+            }
+            _loadRewardedAd();
+          });
+          setState(() {
+            _rewardedAd = ad;
+          });
+        }, onAdFailedToLoad: (err) {
+          print('Error showing rewarded ad : ${err.message}');
+        }));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRewardedAd();
+    _loadInterstitialAd();
+  }
+
+  @override
+  void dispose() {
+    _rewardedAd?.dispose();
+    _interstitialAd?.dispose();
+    super.dispose();
+  }
+
+  void setNewCoins(coins) {
+    Future.delayed(Duration.zero, () {
+      MapProviders element = Provider.of<MapProviders>(context, listen: false);
+      element.setCoins(coins);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ValueListenableBuilder(
-                  valueListenable: gameRef.isPaused,
+                  valueListenable: widget.gameRef.isPaused,
                   builder: (BuildContext context, value, Widget? child) {
                     return Material(
                       color: Colors.transparent,
@@ -31,15 +127,15 @@ class OverlayDashboard extends StatelessWidget {
                           iconSize: 30,
                           onPressed: () {
                             if (value) {
-                              if (gameRef.life.value > 0) {
-                                gameRef.resumeEngine();
-                                gameRef.audioComponent.resumeBGM();
-                                gameRef.isPaused.value = false;
+                              if (widget.gameRef.life.value > 0) {
+                                widget.gameRef.resumeEngine();
+                                widget.gameRef.audioComponent.resumeBGM();
+                                widget.gameRef.isPaused.value = false;
                               }
                             } else {
-                              gameRef.pauseEngine();
-                              gameRef.audioComponent.pauseBGM();
-                              gameRef.isPaused.value = true;
+                              widget.gameRef.pauseEngine();
+                              widget.gameRef.audioComponent.pauseBGM();
+                              widget.gameRef.isPaused.value = true;
                             }
                           },
                           icon: value == true
@@ -51,7 +147,7 @@ class OverlayDashboard extends StatelessWidget {
                   },
                 ),
                 ValueListenableBuilder(
-                  valueListenable: gameRef.life,
+                  valueListenable: widget.gameRef.life,
                   builder: (BuildContext context, value, Widget? child) {
                     final List<Widget> list = [];
                     for (int i = 0; i < 5; i++) {
@@ -116,26 +212,23 @@ class OverlayDashboard extends StatelessWidget {
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 10.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            DefaultTextStyle(
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'AudioWide',
-                                  fontSize: 15),
-                              child: Card(
-                                  color: Colors.yellow,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                        'Highest Coins: ${value.highCoin}'),
-                                  )),
-                            )
-                          ],
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          DefaultTextStyle(
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'AudioWide',
+                                fontSize: 15),
+                            child: Card(
+                                color: Colors.yellow,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:
+                                      Text('${value.highCoin} : Highest Coins'),
+                                )),
+                          )
+                        ],
                       ),
                     );
                   },
@@ -145,9 +238,9 @@ class OverlayDashboard extends StatelessWidget {
           ],
         ),
         ValueListenableBuilder(
-          valueListenable: gameRef.isPaused,
+          valueListenable: widget.gameRef.isPaused,
           builder: (BuildContext context, value, Widget? child) {
-            if (gameRef.life.value > 0) {
+            if (widget.gameRef.life.value > 0) {
               if (value) {
                 return Center(
                   child: Card(
@@ -161,16 +254,20 @@ class OverlayDashboard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          const Text(
+                          Text(
                             'Paused',
-                            style: TextStyle(fontSize: 40, color: Colors.white),
+                            style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.09,
+                                color: Colors.white),
                           ),
                           TextButton(
                               onPressed: () {
-                                gameRef.audioComponent.stopBGM();
+                                widget.gameRef.audioComponent.stopBGM();
+                                widget.gameRef.detach;
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
-                                        builder: (context) => const MainMenu()),
+                                        builder: (context) => MainMenu()),
                                     (Route<dynamic> route) => false);
                               },
                               child: Card(
@@ -191,9 +288,18 @@ class OverlayDashboard extends StatelessWidget {
                             children: [
                               TextButton(
                                   onPressed: () {
-                                    gameRef.audioComponent.stopBGM();
-                                  Navigator.of(context)
-                        .pushReplacement(MaterialPageRoute(builder: (context) => const MyGame()));
+                                    isMenu = false;
+                                    if (_interstitialAd != null) {
+                                      isloading.value = true;
+                                      _interstitialAd!.show();
+                                    } else {
+                                      print('InterstitialAd Not Loaded');
+                                      widget.gameRef.detach;
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const MyGame()));
+                                    }
                                   },
                                   child: Card(
                                       shape: RoundedRectangleBorder(
@@ -211,10 +317,10 @@ class OverlayDashboard extends StatelessWidget {
                                       ))),
                               TextButton(
                                   onPressed: () {
-                                    if (gameRef.life.value > 0) {
-                                      gameRef.resumeEngine();
-                                      gameRef.audioComponent.resumeBGM();
-                                      gameRef.isPaused.value = false;
+                                    if (widget.gameRef.life.value > 0) {
+                                      widget.gameRef.resumeEngine();
+                                      widget.gameRef.audioComponent.resumeBGM();
+                                      widget.gameRef.isPaused.value = false;
                                     }
                                   },
                                   child: Card(
@@ -244,12 +350,25 @@ class OverlayDashboard extends StatelessWidget {
           },
         ),
         ValueListenableBuilder(
-          valueListenable: gameRef.life,
+          valueListenable: widget.gameRef.life,
           builder: (BuildContext context, value, Widget? child) {
             if (value <= 0) {
-              helper.setHighest(gameRef.score, gameRef.gem.value);
-              gameRef.pauseEngine();
-              gameRef.audioComponent.stopBGM();
+              int overallCoins = (sp?.getInt('totalCoins') ?? 0);
+              if (widget.gameRef.adCounter == 1 && !isOne) {
+                isOne = true;
+                int coins = widget.gameRef.gem.value + overallCoins;
+                collectedCoins = widget.gameRef.gem.value;
+                setNewCoins(coins);
+                helper.addCoins(widget.gameRef.gem.value);
+              } else if (widget.gameRef.adCounter == 2) {
+                int newCoins = widget.gameRef.gem.value - collectedCoins!;
+                helper.addCoins(newCoins);
+                int coins = overallCoins + newCoins;
+                setNewCoins(coins);
+              }
+              helper.setHighest(widget.gameRef.score, widget.gameRef.gem.value);
+              widget.gameRef.pauseEngine();
+              widget.gameRef.audioComponent.pauseBGM();
               return Center(
                 child: Card(
                   shape: RoundedRectangleBorder(
@@ -262,9 +381,12 @@ class OverlayDashboard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        const Text(
+                        Text(
                           'Game Over',
-                          style: TextStyle(fontSize: 50, color: Colors.white),
+                          style: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.1,
+                              color: Colors.white),
                         ),
                         Consumer<HighScore>(
                           builder:
@@ -274,11 +396,11 @@ class OverlayDashboard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Your Score: ${gameRef.score}',
+                                  'Your Score: ${widget.gameRef.score}',
                                   style: const TextStyle(
-                                      fontSize: 30, color: Colors.white),
+                                      fontSize: 25, color: Colors.white),
                                 ),
-                                (value.highScore < gameRef.score)
+                                (value.highScore < widget.gameRef.score)
                                     ? const Padding(
                                         padding: EdgeInsets.only(left: 8.0),
                                         child: Card(
@@ -306,11 +428,11 @@ class OverlayDashboard extends StatelessWidget {
                           children: [
                             TextButton(
                                 onPressed: () {
-                                  gameRef.audioComponent.stopBGM();
+                                  widget.gameRef.audioComponent.stopBGM();
+                                  widget.gameRef.detach;
                                   Navigator.of(context).pushAndRemoveUntil(
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const MainMenu()),
+                                          builder: (context) => MainMenu()),
                                       (Route<dynamic> route) => false);
                                 },
                                 child: Card(
@@ -327,10 +449,21 @@ class OverlayDashboard extends StatelessWidget {
                                       ),
                                     ))),
                             TextButton(
-                                onPressed: () {
-                                  gameRef.audioComponent.stopBGM();
-                                  Navigator.of(context)
-                        .pushReplacement(MaterialPageRoute(builder: (context) => const MyGame()));
+                                onPressed: () async {
+                                  isMenu = false;
+                                  if (_interstitialAd != null) {
+                                    isloading.value = true;
+                                    _interstitialAd!.show();
+                                    print('hello');
+                                  } else {
+                                    widget.gameRef.detach;
+                                    print('InterstitialAd Not Loaded');
+                                    widget.gameRef.detach;
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MyGame()));
+                                  }
                                 },
                                 child: Card(
                                     shape: RoundedRectangleBorder(
@@ -346,7 +479,86 @@ class OverlayDashboard extends StatelessWidget {
                                       ),
                                     ))),
                           ],
-                        )
+                        ),
+                        if (_rewardedAd != null)
+                          if (widget.gameRef.adCounter == 1)
+                            TextButton(
+                              onPressed: () {
+                                widget.gameRef.adCounter++;
+                                _rewardedAd?.show(
+                                    onUserEarnedReward: (_, reward) {
+                                  widget.gameRef.life.value =
+                                      reward.amount.toInt();
+                                });
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                color: Colors.yellow,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.ondemand_video,
+                                        color: Colors.black,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        '2 more lifes'.toUpperCase(),
+                                        style: const TextStyle(
+                                            color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          else if (widget.gameRef.adCounter == 2)
+                            TextButton(
+                              onPressed: () {
+                                widget.gameRef.adCounter++;
+                                _rewardedAd?.show(
+                                    onUserEarnedReward: (_, reward) {
+                                  overallCoins =
+                                      (sp?.getInt('totalCoins') ?? 0);
+                                  helper.addCoins(widget.gameRef.gem.value);
+                                  int coins =
+                                      overallCoins + (widget.gameRef.gem.value);
+                                  setNewCoins(coins);
+                                });
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                color: Colors.yellow,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.ondemand_video,
+                                          color: Colors.black),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        '2X your coins'.toUpperCase(),
+                                        style: const TextStyle(
+                                            color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            const SizedBox()
                       ],
                     ),
                   ),
@@ -354,6 +566,16 @@ class OverlayDashboard extends StatelessWidget {
               );
             }
             return Container();
+          },
+        ),
+        ValueListenableBuilder(
+          valueListenable: isloading,
+          builder: (BuildContext context, bool value, Widget? child) {
+            if (value) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              return Container();
+            }
           },
         )
       ],
